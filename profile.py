@@ -117,16 +117,6 @@ pc.defineParameter(
     longDescription="Choose the mode for kube-proxy (comparison: https://www.projectcalico.org/comparing-kube-proxy-modes-iptables-or-ipvs/).",
     advanced=True)
 pc.defineParameter(
-    "kubePodsSubnet","Kubernetes Pods Subnet",
-    portal.ParameterType.STRING,"192.168.0.0/17",
-    longDescription="The subnet containing pod addresses.",
-    advanced=True)
-pc.defineParameter(
-    "kubeServiceAddresses","Kubernetes Service Addresses",
-    portal.ParameterType.STRING,"192.168.128.0/17",
-    longDescription="The subnet containing service addresses.",
-    advanced=True)
-pc.defineParameter(
     "kubeDoMetalLB","Kubespray Enable MetalLB",
     portal.ParameterType.BOOLEAN,True,
     longDescription="We enable MetalLB by default, so that users can use an \"external\" load balancer service type.  You need at least one public IP address for this option because it doesn't make sense without one.",
@@ -227,6 +217,24 @@ pc.defineStructParameter(
             portal.ParameterType.BOOLEAN,True,
             longDescription="Mount the remote dataset in read-only mode.")])
 
+INTERMESH_GROUPID="intermesh"
+pc.defineParameterGroup(INTERMESH_GROUPID, "Intermesh-related parameters")
+pc.defineParameter(
+    "kubePodsSubnet","Kubernetes Pods Subnet",
+    portal.ParameterType.STRING,"192.168.0.0/17",
+    longDescription="The subnet containing pod addresses.",
+    advanced=True, groupId=INTERMESH_GROUPID)
+pc.defineParameter(
+    "kubeServiceAddresses","Kubernetes Service Addresses",
+    portal.ParameterType.STRING,"192.168.128.0/17",
+    longDescription="The subnet containing service addresses.",
+    advanced=True, groupId=INTERMESH_GROUPID)
+
+pc.defineParameter(
+    "clusterRole", "Cluster Role", portal.ParameterType.STRING,
+    "primary", [("primary", "Primary"), ("remote", "Remote Peer (exports services)")],
+    longDescription="Indicates whether the cluster is primary or a remote peer that exports services for the primary",
+    advanced=True, groupId=INTERMESH_GROUPID)
 #
 # Get any input parameter values that will override our defaults.
 #
