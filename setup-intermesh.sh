@@ -32,8 +32,8 @@ sudo apt install -y python3-pip
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 echo "key is $INTERMESH_KEY"
 
-chmod $INTERMESH_KEY 400
-chmod $DEATHSTARBENCH_KEY 400
+chmod 400 $INTERMESH_KEY
+chmod 400 $DEATHSTARBENCH_KEY
 git clone git@github.com:Ngalstyan4/DeathStarBench4intermesh.git --config core.sshCommand="ssh -i $DEATHSTARBENCH_KEY"
 pushd DeathStarBench4intermesh/hotelReservation/
 	git checkout narek
