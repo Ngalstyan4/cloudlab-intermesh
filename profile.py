@@ -246,7 +246,7 @@ pc.defineParameter(
 pc.defineParameter(
     "intermeshBranch", "Intermesh branch or commit-ish value", portal.ParameterType.STRING,"todo::", 
     advanced=True, groupId=INTERMESH_GROUPID)
-    pc.defineParameter(
+pc.defineParameter(
     "deathStarBenchRepo", "DeathStarBench git repo", portal.ParameterType.STRING,"todo::", 
     advanced=True, groupId=INTERMESH_GROUPID)
 pc.defineParameter(
