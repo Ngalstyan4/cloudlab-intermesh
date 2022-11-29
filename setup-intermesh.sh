@@ -5,6 +5,9 @@ set -x
 # Grab our libs
 . "`dirname $0`/setup-lib.sh"
 
+INTERMESH_KEY="`dirname $0`/deploy_keys/intermesh_id_ed25519"
+DEATHSTARBENCH_KEY="`dirname $0`/deploy_keys/deathstarbench_id_ed25519"
+
 if [ -f $OURDIR/intermesh-done ]; then
     exit 0
 fi
@@ -19,11 +22,61 @@ echo 'PATH="$PATH:$HOME/istio-1.16.0/bin"' >> .bashrc
 istioctl install --set profile=demo -y
 kubectl label namespace default istio-injection=enabled
 
-INTERMESH_KEY="./deploy_keys/intermesh_id_ed25519"
-DEATHSTARBENCH_KEY="./deploy_keys/deathstarbench_id_ed25519"
+
+
+sudo apt update
+sudo apt install -y python3-pip
+
+# add github key fingerprint to known hosts to avoid trust host? yes/no question
+# sure! you can mitm me
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+echo "key is $INTERMESH_KEY"
 
 git clone git@github.com:Ngalstyan4/DeathStarBench4intermesh.git --config core.sshCommand="ssh -i $DEATHSTARBENCH_KEY"
-mkdir intermesh_universe
-cd intermesh_universe
+pushd DeathStarBench4intermesh/hotelReservation/
+	git checkout narek
+	./docker_scripts/build-docker-images.sh
+	
+	# N.B. assumes the following or equivalent has run on all nodes so all nodes are able to
+	# get to the cluster-local image repo via localhost
+	#sudo iptables -t nat -A OUTPUT  -p tcp -d localhost --dport 5001 -j DNAT --to 10.10.1.1:5000
 
-git clone git@github.com:lloydbrownjr/intermesh.git --config core.sshCommand="ssh  -i $INTERMESH_KEY"
+	# push hotel reservation images to the local docker registery used by the kind cluster
+	for i in `docker image ls | grep localhost:5000 | awk '{print $1}'`; do docker push $i; done
+
+	SESSION="main"
+	tmux kill-session -t $SESSION
+	tmux new-session -d -s $SESSION
+	tmux split-window -h -t $SESSION:0.0
+	tmux split-window -v -t $SESSION:0.1
+	sleep 10
+	tmux send-keys -t $SESSION:0.1 "cd ~/intermesh_universe/intermesh/ && ./scripts/launch_intermesh.sh" Enter
+
+	if [ "$CLUSTERROLE" = "primary" ]; then
+		kubectl delete -Rf kubernetes/
+		kubectl apply -Rf kubernetes/
+		tmux send-keys -t $SESSION:0.2 "cd ~/intermesh_universe/intermesh/ && python intermesh/intermesh_ctl.py peer --cluster_domain $REMOTEINTERMESHDDOMAIN"
+
+	else
+		kubectl delete -Rf mesh2/
+		kubectl apply -Rf mesh2/
+	fi
+
+popd
+
+mkdir intermesh_universe
+pushd intermesh_universe
+	#git clone git@github.com:lloydbrownjr/intermesh.git --config core.sshCommand="ssh  -i $INTERMESH_KEY"
+	pushd intermesh
+		kubectl apply -f ./conf/intermesh.yaml
+		pip3 install -r requirements.txt
+
+	popd
+popd
+
+
+whoami > ~/who
+
+# set up tmux for intercluster connection
+logtend "intermesh"
+touch $OURDIR/intermesh-done

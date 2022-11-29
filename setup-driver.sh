@@ -2,7 +2,7 @@
 
 set -x
 
-ALLNODESCRIPTS="setup-ssh.sh setup-disk-space.sh"
+ALLNODESCRIPTS="setup-ssh.sh setup-disk-space.sh setup-intermesh-all.sh setup-narek-sanity.sh"
 HEADNODESCRIPTS="setup-nfs-server.sh setup-nginx.sh setup-ssl.sh setup-kubespray.sh setup-kubernetes-extra.sh setup-intermesh.sh setup-end.sh"
 WORKERNODESCRIPTS="setup-nfs-client.sh"
 

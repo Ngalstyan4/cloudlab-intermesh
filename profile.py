@@ -221,12 +221,12 @@ INTERMESH_GROUPID="intermesh"
 pc.defineParameterGroup(INTERMESH_GROUPID, "Intermesh-related parameters")
 pc.defineParameter(
     "kubePodsSubnet","Kubernetes Pods Subnet",
-    portal.ParameterType.STRING,"192.168.0.0/17",
+    portal.ParameterType.STRING,"10.244.0.0/16",
     longDescription="The subnet containing pod addresses.",
     advanced=True, groupId=INTERMESH_GROUPID)
 pc.defineParameter(
     "kubeServiceAddresses","Kubernetes Service Addresses",
-    portal.ParameterType.STRING,"192.168.128.0/17",
+    portal.ParameterType.STRING,"10.96.0.0/12",
     longDescription="The subnet containing service addresses.",
     advanced=True, groupId=INTERMESH_GROUPID)
 
@@ -234,6 +234,23 @@ pc.defineParameter(
     "clusterRole", "Cluster Role", portal.ParameterType.STRING,
     "primary", [("primary", "Primary"), ("remote", "Remote Peer (exports services)")],
     longDescription="Indicates whether the cluster is primary or a remote peer that exports services for the primary",
+    advanced=True, groupId=INTERMESH_GROUPID)
+pc.defineParameter(
+    "remoteIntermeshdDomain", "IP/Domain of Remote Intermeshd", portal.ParameterType.STRING,"",
+    longDescription="The IP/domain where intermeshd of remote cluster is running (used to establish peering connection from primary cluster.)",
+    advanced=True, groupId=INTERMESH_GROUPID)
+
+pc.defineParameter(
+    "intermeshRepo", "Intermesh git repo", portal.ParameterType.STRING,"todo::", 
+    advanced=True, groupId=INTERMESH_GROUPID)
+pc.defineParameter(
+    "intermeshBranch", "Intermesh branch or commit-ish value", portal.ParameterType.STRING,"todo::", 
+    advanced=True, groupId=INTERMESH_GROUPID)
+    pc.defineParameter(
+    "deathStarBenchRepo", "DeathStarBench git repo", portal.ParameterType.STRING,"todo::", 
+    advanced=True, groupId=INTERMESH_GROUPID)
+pc.defineParameter(
+    "deathStarBenchBranch", "DeathStarBench branch or commit-ish value", portal.ParameterType.STRING,"todo::", 
     advanced=True, groupId=INTERMESH_GROUPID)
 #
 # Get any input parameter values that will override our defaults.
