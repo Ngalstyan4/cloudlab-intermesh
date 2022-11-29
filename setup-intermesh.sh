@@ -32,6 +32,8 @@ sudo apt install -y python3-pip
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 echo "key is $INTERMESH_KEY"
 
+chmod $INTERMESH_KEY 400
+chmod $DEATHSTARBENCH_KEY 400
 git clone git@github.com:Ngalstyan4/DeathStarBench4intermesh.git --config core.sshCommand="ssh -i $DEATHSTARBENCH_KEY"
 pushd DeathStarBench4intermesh/hotelReservation/
 	git checkout narek
@@ -66,7 +68,7 @@ popd
 
 mkdir intermesh_universe
 pushd intermesh_universe
-	#git clone git@github.com:lloydbrownjr/intermesh.git --config core.sshCommand="ssh  -i $INTERMESH_KEY"
+	git clone git@github.com:lloydbrownjr/intermesh.git --config core.sshCommand="ssh  -i $INTERMESH_KEY"
 	pushd intermesh
 		kubectl apply -f ./conf/intermesh.yaml
 		pip3 install -r requirements.txt
