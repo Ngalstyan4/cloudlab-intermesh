@@ -76,9 +76,6 @@ pushd intermesh_universe
 	popd
 popd
 
-
-whoami > ~/who
-
 # set up tmux for intercluster connection
 logtend "intermesh"
 touch $OURDIR/intermesh-done
