@@ -17,7 +17,8 @@ logtstart "intermesh"
 cd ~
 # install istio
 curl -L https://istio.io/downloadIstio | sh -
-echo 'PATH="$PATH:$HOME/istio-1.16.0/bin"' >> .bashrc
+echo 'PATH="$PATH:$HOME/istio-1.16.0/bin"' >> ~/.bashrc
+source ~/.bashrc
 
 istioctl install --set profile=demo -y
 kubectl label namespace default istio-injection=enabled
@@ -37,14 +38,16 @@ chmod 400 $DEATHSTARBENCH_KEY
 git clone git@github.com:Ngalstyan4/DeathStarBench4intermesh.git --config core.sshCommand="ssh -i $DEATHSTARBENCH_KEY"
 pushd DeathStarBench4intermesh/hotelReservation/
 	git checkout narek
-	./docker_scripts/build-docker-images.sh
-	
+	echo "running docker build"
+	bash ./docker_scripts/build-docker-images.sh
+	echo "done with docker build"
+
 	# N.B. assumes the following or equivalent has run on all nodes so all nodes are able to
 	# get to the cluster-local image repo via localhost
 	#sudo iptables -t nat -A OUTPUT  -p tcp -d localhost --dport 5001 -j DNAT --to 10.10.1.1:5000
 
 	# push hotel reservation images to the local docker registery used by the kind cluster
-	for i in `docker image ls | grep localhost:5000 | awk '{print $1}'`; do docker push $i; done
+	for i in `docker image ls | grep localhost:5001 | awk '{print $1}'`; do docker push $i; done
 
 	SESSION="main"
 	tmux kill-session -t $SESSION
